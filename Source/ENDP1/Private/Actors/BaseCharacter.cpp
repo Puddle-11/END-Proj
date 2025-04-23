@@ -6,7 +6,6 @@
 // Sets default values
 ABaseCharacter::ABaseCharacter()
 {
-	weaponClass = ABaseRifle::StaticClass();
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	GetMesh()->SetRelativeLocation(FVector(0.0f, 0.0f, -90.0f));
@@ -14,28 +13,25 @@ ABaseCharacter::ABaseCharacter()
 
 	ChildActorComponent = CreateDefaultSubobject<UChildActorComponent>(TEXT("ChildActorComponent"));
 	ChildActorComponent->SetupAttachment(GetMesh(), TEXT("place_weapon_here"));
-	static ConstructorHelpers::FClassFinder<ABaseRifle> RifleBP(TEXT("/Game/Code/Actors/BP_CodeBaseRifle"));
 
-	ChildActorComponent->SetChildActorClass(weaponClass);
 }
 
 // Called when the game starts or when spawned
 void ABaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+	ChildActorComponent->SetChildActorClass(weaponClass);
 }
 
 // Called every frame
 void ABaseCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 // Called to bind functionality to input
 void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
 }
 

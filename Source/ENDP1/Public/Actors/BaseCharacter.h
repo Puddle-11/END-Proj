@@ -18,7 +18,7 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly);
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapons");
 	class TSubclassOf<AActor> weaponClass;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly);
 	class UChildActorComponent* ChildActorComponent;

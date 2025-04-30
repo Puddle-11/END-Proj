@@ -3,6 +3,8 @@
 
 #include "Actors/BaseCharacter.h"
 #include "Actors/BaseRifle.h"
+#include "Both/CharacterAnimation.h"
+#include "HealthComponent.h"
 // Sets default values
 ABaseCharacter::ABaseCharacter()
 {
@@ -10,8 +12,9 @@ ABaseCharacter::ABaseCharacter()
 	PrimaryActorTick.bCanEverTick = true;
 	GetMesh()->SetRelativeLocation(FVector(0.0f, 0.0f, -90.0f));
 	GetMesh()->SetRelativeRotation(FRotator(0.0f, -90.0f, 0.0f));
+    ChildActorComponent = CreateDefaultSubobject<UChildActorComponent>(TEXT("ChildActorComponent"));
 
-	ChildActorComponent = CreateDefaultSubobject<UChildActorComponent>(TEXT("ChildActorComponent"));
+	healthComp = CreateDefaultSubobject<UHealthComponent>(TEXT("Health Component"));
 	ChildActorComponent->SetupAttachment(GetMesh(), TEXT("place_weapon_here"));
 
 }
@@ -21,6 +24,20 @@ void ABaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	ChildActorComponent->SetChildActorClass(weaponClass);
+    AActor* ChildActor = ChildActorComponent->GetChildActor();
+    ABaseRifle* Rifle = Cast<ABaseRifle>(ChildActor);
+
+    if (Rifle)
+    {
+        weaponObject = Rifle;
+    }
+    else
+    {
+        UE_LOG(LogTemp, Warning, TEXT("Weapon needed"));
+        Destroy();
+    }
+
+    ABPAnim = Cast<UCharacterAnimation>(GetMesh()->GetAnimInstance());
 }
 
 // Called every frame

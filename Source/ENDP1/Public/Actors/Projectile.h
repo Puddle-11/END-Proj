@@ -32,6 +32,10 @@ protected:
 	float destroyTime;
 	UPROPERTY(BlueprintReadOnly)
 	FVector Size;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	AController* controller;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float baseDamage;
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

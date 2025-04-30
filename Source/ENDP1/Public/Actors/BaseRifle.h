@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Delegates/DelegateCombinations.h"
 #include "BaseRifle.generated.h"
 
 UCLASS()
@@ -21,14 +22,29 @@ public:
 	TSubclassOf<AActor> projClass;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly);
 	class USkeletalMeshComponent* rifleMesh;
-	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly);
+	AActor* ParentActor;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite);
+	FName muzzleSocketName;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite);
+	float cooldown = 5;
 
 protected:
+
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
+	bool actionHappening;
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-	void Attack();
+	bool Attack();
+	bool CanAttack();
+	void SetAttack();
+
+
+
+	FTimerDelegate actionStopped;
+
+
 };

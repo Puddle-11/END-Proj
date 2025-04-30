@@ -7,7 +7,7 @@
 #include "UObject/ConstructorHelpers.h"
 #include "ENDP1/ENDP1.h"
 #include "GameFramework/ProjectileMovementComponent.h"
-
+#include "Kismet/GameplayStatics.h" 
 // Sets default values
 AProjectile::AProjectile() : destroyTime(30), Size(0.18f, 0.18f, 0.18f)
 {
@@ -16,7 +16,7 @@ AProjectile::AProjectile() : destroyTime(30), Size(0.18f, 0.18f, 0.18f)
 	sphereCollider = CreateDefaultSubobject<USphereComponent>("Sphere Collision");
 	sphereCollider->SetWorldScale3D(FVector(0.2f, 0.2f, 0.2f));
 
-	//sphereCollider->OnComponentHit.AddDynamic(this, &AProjectile::HandleHit);
+//	sphereCollider->OnComponentHit.AddDynamic(this, &AProjectile::HandleHit);
 	sphereCollider->OnComponentBeginOverlap.AddDynamic(this, &AProjectile::HandleBeginOverlap);
 
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> Asset(TEXT("StaticMesh'/Engine/BasicShapes/Sphere.Sphere'"));
@@ -32,8 +32,6 @@ AProjectile::AProjectile() : destroyTime(30), Size(0.18f, 0.18f, 0.18f)
 
 	projMovement->InitialSpeed = 1000;
 	projMovement->MaxSpeed  = 1000;
-
-
 }
 
 // Called when the game starts or when spawned
@@ -42,7 +40,7 @@ void AProjectile::BeginPlay()
 	Super::BeginPlay();
 	FTimerHandle projTimer;
 	GetWorld()->GetTimerManager().SetTimer(projTimer, this, &AProjectile::K2_DestroyActor, destroyTime);
-
+	controller = Cast<AController>(GetOwner());
 }
 
 // Called every frame
@@ -60,8 +58,23 @@ void AProjectile::HandleHit(UPrimitiveComponent* hitComponent, AActor* otherActo
 
 void AProjectile::HandleBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	UE_LOG(Game, Warning, TEXT("Overlap was called"));
-	UE_LOG(Game, Warning, TEXT("Actor Name is: %s"), *OtherActor->GetName());
+	UE_LOG(Game, Log, TEXT("Overlap was called"));
+	UE_LOG(Game, Log, TEXT("Actor Name is: %s"), *OtherActor->GetName());
+
+	if (OtherActor && OtherActor != this)
+	{
+		UE_LOG(Game, Log, TEXT("Applying Damage"));
+
+		UGameplayStatics::ApplyDamage(
+			OtherActor,                
+			baseDamage,                  
+			controller,      
+			this,                
+			UDamageType::StaticClass()   
+		);
+
+	}
+
 	this->K2_DestroyActor();
 }
 

@@ -4,7 +4,7 @@
 #include "Both/CharacterAnimation.h"
 #include "KismetAnimationLibrary.h"
 
-void UCharacterAnimation::NativeUpdateAnimation(float DeltaSeconds)
+void UCharacterAnimation::NativeUpdateAnimation(float DeltaSeconds) 
 {
 	Super::NativeUpdateAnimation(DeltaSeconds);
 	APawn* pawn = TryGetPawnOwner();
@@ -20,7 +20,22 @@ void UCharacterAnimation::NativeUpdateAnimation(float DeltaSeconds)
 	}
 	else
 	{
-
 		//Invalid
 	}
+		PreviewWindowUpdate();
 }
+
+void UCharacterAnimation::PreviewWindowUpdate()
+{
+	if (debugFiring)
+	{
+		FireAnimationWindow();
+		debugFiring = false;
+	}
+}
+
+void UCharacterAnimation::FireAnimationWindow()
+{
+	PlaySlotAnimationAsDynamicMontage(fireIronSight, slotName);
+}
+

@@ -22,8 +22,14 @@ protected:
 	class TSubclassOf<AActor> weaponClass;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly);
 	class UChildActorComponent* ChildActorComponent;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly);
 	class ABaseRifle* weaponObject;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly);
+	class UCharacterAnimation* ABPAnim;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly);
+	class UHealthComponent* healthComp;
 public:	
+
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 

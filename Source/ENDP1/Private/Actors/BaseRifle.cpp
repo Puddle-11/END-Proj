@@ -4,14 +4,14 @@
 #include "Actors/BaseRifle.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/SceneComponent.h"
+#include "ENDP1/ENDP1.h"
 
 // Sets default values
 ABaseRifle::ABaseRifle()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
-	//RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("DefaultSceneRoot"));
-
+	RootComponent = CreateDefaultSubobject<USceneComponent>("Default Scene");
 	rifleMesh = CreateDefaultSubobject<USkeletalMeshComponent>("Mesh");
 	rifleMesh->SetupAttachment(RootComponent);
 
@@ -21,27 +21,58 @@ ABaseRifle::ABaseRifle()
 void ABaseRifle::BeginPlay()
 {
 	Super::BeginPlay();
-	AActor* act = this;
-	ParentPawn = Cast<APawn>(act);
 
+	APawn* CastedPawn = Cast<APawn>(GetParentActor());
+
+	if (CastedPawn)
+	{
+		ParentPawn = CastedPawn;
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("bruh"));
+		Destroy();
+	}
 }
 
 // Called every frame
 void ABaseRifle::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
-void ABaseRifle::Attack()
+bool ABaseRifle::Attack()
 {
-	FVector SpawnLocation = GetActorLocation();
-	FRotator SpawnRotation = GetActorRotation();
+	bool res = CanAttack();
+	if (res)
+	{
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.Owner = ParentPawn->GetController();
+		SpawnParams.Instigator = ParentPawn;
 
-	FActorSpawnParameters SpawnParams;
-	SpawnParams.Owner = ParentPawn->GetController();
-	SpawnParams.Instigator = ParentPawn; // If firing from a pawn
 
-	GetWorld()->SpawnActor<AActor>(projClass, SpawnLocation, SpawnRotation, SpawnParams);
+		FVector pos = rifleMesh->GetSocketLocation(muzzleSocketName);
+		FRotator rot = ParentPawn->GetBaseAimRotation();
+
+		FTimerHandle TimerHandle;
+		FTimerDelegate TimerDelegate;
+		TimerDelegate.BindUObject(this, &ABaseRifle::SetAttack);
+		actionHappening = true;
+		GetWorld()->GetTimerManager().SetTimer(TimerHandle, TimerDelegate, cooldown, false);
+
+		GetWorld()->SpawnActor<AActor>(projClass, pos, rot, SpawnParams);
+	}
+	return res;
 }
+
+
+bool ABaseRifle::CanAttack()
+{
+	return !actionHappening;
+}
+void ABaseRifle::SetAttack()
+{
+	actionHappening = false;
+}
+
 

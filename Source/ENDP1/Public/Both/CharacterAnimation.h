@@ -18,6 +18,15 @@ protected:
 	float Velocity;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Default)
 	float Direction;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Default)
+	bool debugFiring;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Default)
+	UAnimSequence* fireIronSight;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Default)
+	FName slotName = "ActionSlotName";
+
 public:
 	void NativeUpdateAnimation(float DeltaSeconds) override;
+	void PreviewWindowUpdate();
+	void FireAnimationWindow();
 };
